@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function ListaEmpleados() {
 
@@ -20,6 +21,24 @@ export default function ListaEmpleados() {
         .catch(err => console.log(err));
     }
 
+    const eliminarEmpleado = async (id) => {
+        try {
+            const res = await fetch(`${urlBase}/${id}`, {
+                method: 'DELETE'
+            });
+            
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.message || 'Erro al eliminar el empleado');
+            }
+            
+            cargarEmpleados();
+        } catch (error) {
+            console.error('Error al eliminar', error.message);
+            alert(`Error: ${error.message}`);
+        }
+    } 
+
     return (
         <>
             <div className='container'>
@@ -27,12 +46,13 @@ export default function ListaEmpleados() {
                     <h3>Sistema de Recursos Humanos</h3>
                 </div>
                 <table className="table table-striped table-hover align-middle">
-                    <thead className='table-dark'>
+                    <thead className='table-info'>
                         <tr>
                             <th scope="col">Id</th>
                             <th scope="col">Empleado</th>
                             <th scope="col">Departamento</th>
                             <th scope="col">Sueldo</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -48,6 +68,20 @@ export default function ListaEmpleados() {
                                             style: 'currency',
                                             currency: 'GTQ'
                                         })}
+                                    </td>
+                                    <td className="text-center">
+                                        <div>
+                                            <Link 
+                                            to={`/editar/${empleado.idEmpleado}`}
+                                            className="btn btn-warning btn-sm me-3">
+                                                Editar
+                                            </Link>
+                                            <button
+                                            onClick={() => eliminarEmpleado(empleado.idEmpleado)}
+                                            className="btn btn-danger btn-sm">
+                                                Eliminar
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))
